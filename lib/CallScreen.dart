@@ -55,11 +55,17 @@ class CallScreenState extends State<CallScreen> {
 
     signalling.onAddRemoteStream = (MediaStream stream) {
       setState(() {
-        stream.getTracks().forEach((element) {
-          if (element.kind == "audio") element.enableSpeakerphone(true);
-        });
+        if (!kIsWeb) {
+          stream.getTracks().forEach((element) {
+            if (element.kind == "audio") element.enableSpeakerphone(true);
+          });
+        }
         remoteRenderer.srcObject = stream;
       });
+    };
+
+    signalling.onEndCall = () {
+      if (mounted) Navigator.of(context).pop();
     };
   }
 
@@ -68,7 +74,7 @@ class CallScreenState extends State<CallScreen> {
     super.dispose();
     localRenderer.dispose();
     remoteRenderer.dispose();
-    // signalling.endCall();
+    signalling.endCall();
   }
 
   Future<List<dynamic>> getUserMedia() async {
@@ -103,9 +109,26 @@ class CallScreenState extends State<CallScreen> {
         children: [
           MainVideo(renderer: this.localRenderer),
           SecondaryVideo(
-              appBarHeight: appBarHeight,
-              statusBarHeight: statusBarHeight,
-              renderer: this.remoteRenderer)
+            appBarHeight: appBarHeight,
+            statusBarHeight: statusBarHeight,
+            renderer: this.remoteRenderer,
+          ),
+          Align(
+            child: FractionallySizedBox(
+              heightFactor: 0.05,
+              widthFactor: 1,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Disconnect"),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                ),
+              ),
+            ),
+            alignment: Alignment.bottomCenter,
+          )
         ],
       ),
     );
