@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 typedef RecipientIceCandidateCallback = void Function(
@@ -28,6 +29,7 @@ class FireStoreCallService {
     this.recipientIceCandidates = roomRef.collection("recipientIceCandidates");
 
     this.roomId = roomRef.id;
+    Clipboard.setData(ClipboardData(text: this.roomId));
   }
 
   void addCallerIceCandidates(map) {
