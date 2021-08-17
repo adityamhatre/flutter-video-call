@@ -99,7 +99,7 @@ class CallScreenState extends State<CallScreen> {
   @override
   Widget build(BuildContext context) {
     AppBar appBar = MyAppBar(
-      appBarTitle: Text(this.title),
+      title: Text(this.title),
     );
     final appBarHeight = appBar.preferredSize.height;
     final statusBarHeight = MediaQuery.of(context).padding.top;
@@ -115,7 +115,7 @@ class CallScreenState extends State<CallScreen> {
           ),
           Align(
             child: FractionallySizedBox(
-              heightFactor: 0.05,
+              heightFactor: 0.1,
               widthFactor: 1,
               child: ElevatedButton(
                 onPressed: () {

@@ -89,4 +89,8 @@ class FireStoreCallService {
 
     FirebaseFirestore.instance.collection("rooms").doc(roomId).delete();
   }
+
+  static Future<QuerySnapshot<Map<String, dynamic>>> getUsers() {
+    return FirebaseFirestore.instance.collection("users").orderBy("name").get();
+  }
 }

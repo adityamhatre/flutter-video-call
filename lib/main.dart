@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/HomeScreen.dart';
 import 'package:flutter_app/MyAppBar.dart';
+import 'package:flutter_app/SelectUser.dart';
 
 void main() {
   runApp(MyApp());
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
             theme: ThemeData(
               primarySwatch: Colors.blue,
             ),
-            home: HomeScreen(),
+            home: SelectUser(),
           );
         } else {
           return MaterialApp(
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
               ),
               home: Scaffold(
                 appBar: MyAppBar(
-                  appBarTitle: Text("Loading..."),
+                  title: Text("Loading..."),
                 ),
                 body: Center(
                   child: Text("Loading..."),

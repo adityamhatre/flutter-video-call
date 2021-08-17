@@ -94,12 +94,11 @@ class Signalling {
     firestoreCallService.setAnswer(answer);
     firestoreCallService.callerIceCandidates
         .get()
-        .then((value) =>
-        value.docs.forEach((element) {
-          dynamic doc = element.data();
-          peerConnection.addCandidate(RTCIceCandidate(
-              doc['candidate'], doc['sdpMid'], doc['sdpMLineIndex']));
-        }));
+        .then((value) => value.docs.forEach((element) {
+              dynamic doc = element.data();
+              peerConnection.addCandidate(RTCIceCandidate(
+                  doc['candidate'], doc['sdpMid'], doc['sdpMLineIndex']));
+            }));
     listenForEndCall();
   }
 
