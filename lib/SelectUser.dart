@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/FirestoreCallService.dart';
 import 'package:flutter_app/HomeScreen.dart';
@@ -15,6 +16,14 @@ class SelectUserState extends State<SelectUser> {
   late Tuple2 selectedUser;
   late Future<QuerySnapshot<Map<String, dynamic>>> getUsers;
   late SharedPreferences prefs;
+
+  Future<void> saveTokenToDatabase(String token) async {
+    var token = await FirebaseMessaging.instance.getToken();
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(prefs.getString("userId"))
+        .update({'fcmToken': token});
+  }
 
   @override
   void initState() {
@@ -80,9 +89,14 @@ class SelectUserState extends State<SelectUser> {
     );
   }
 
-  void checkAlreadyLoggedIn() {
+  void checkAlreadyLoggedIn() async {
     if (prefs.getString("userId") != null &&
         prefs.getString("userId")!.isNotEmpty) {
+
+      var token = await FirebaseMessaging.instance.getToken();
+      await saveTokenToDatabase(token.toString());
+      FirebaseMessaging.instance.onTokenRefresh.listen(saveTokenToDatabase);
+
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (BuildContext context) =>
