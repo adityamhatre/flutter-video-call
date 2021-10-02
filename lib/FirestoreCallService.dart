@@ -18,7 +18,7 @@ class FireStoreCallService {
   late RecipientIceCandidateCallback onRecipientIceCandidates;
   late CallAnswerCallback onCallAnswer;
 
-  void createOrJoinRoom([String? roomId]) {
+  String createOrJoinRoom([String? roomId]) {
     if (roomId != null) {
       roomRef = FirebaseFirestore.instance.collection("rooms").doc(roomId);
     } else {
@@ -30,6 +30,7 @@ class FireStoreCallService {
 
     this.roomId = roomRef.id;
     Clipboard.setData(ClipboardData(text: this.roomId));
+    return this.roomId;
   }
 
   void addCallerIceCandidates(map) {

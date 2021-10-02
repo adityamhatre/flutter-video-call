@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/FCMHandler.dart';
 import 'package:flutter_app/MyAppBar.dart';
 import 'package:flutter_app/SelectUser.dart';
 
@@ -14,6 +16,7 @@ class MyApp extends StatelessWidget {
     return FutureBuilder(
       future: Firebase.initializeApp(),
       builder: (context, snapshot) {
+        FirebaseMessaging.onBackgroundMessage(FCMHandler.messageHandler);
         if (snapshot.connectionState == ConnectionState.done) {
           return MaterialApp(
             title: 'Flutter Demo',

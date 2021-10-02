@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/Signalling.dart';
 import 'package:flutter_app/secondaryVideo.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 
 import 'MyAppBar.dart';
@@ -11,31 +12,36 @@ import 'mainVideo.dart';
 class CallScreen extends StatefulWidget {
   late final title;
   late final String roomId;
+  late final String? fcmToken;
 
-  CallScreen({required String title, required String roomId}) {
+
+  CallScreen({required String title, required String roomId, required String? fcmToken}) {
     this.title = title;
     this.roomId = roomId;
+    this.fcmToken = fcmToken;
   }
 
   @override
   State<StatefulWidget> createState() {
-    return CallScreenState(title: this.title, roomId: this.roomId);
+    return CallScreenState(title: this.title, roomId: this.roomId, fcmToken: this.fcmToken);
   }
 }
 
 class CallScreenState extends State<CallScreen> {
   late final String title;
   late String roomId;
+  late String? fcmToken;
   late final Signalling signalling;
   late final RTCVideoRenderer localRenderer;
   late final RTCVideoRenderer remoteRenderer;
 
-  CallScreenState({required String title, required String roomId}) {
+  CallScreenState({required String title, required String roomId, required String? fcmToken}) {
     this.title = title;
     this.signalling = Signalling();
     this.localRenderer = RTCVideoRenderer();
     this.remoteRenderer = RTCVideoRenderer();
     this.roomId = roomId.trim();
+    this.fcmToken = fcmToken;
   }
 
   @override
@@ -49,7 +55,14 @@ class CallScreenState extends State<CallScreen> {
           signalling.joinRoom(roomId, value[1]);
         }
       } else {
-        signalling.createRoom(value[1]);
+        signalling.createRoom(value[1]).then((value) {
+          print('Sending req');
+          var url = Uri.parse('http://192.168.1.197:3000/call');
+          var response = http.post(url, body: {'roomId': value, 'fcmToken': fcmToken});
+          response.then((value) => print("value: ${value.body}"), onError: (error) {
+            print('error: $error');
+          });
+        });
       }
     });
 

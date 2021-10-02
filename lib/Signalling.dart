@@ -48,9 +48,9 @@ class Signalling {
     };
   }
 
-  createRoom(localStream) async {
+  Future<String> createRoom(localStream) async {
     peerConnection = await createPeerConnection(config);
-    firestoreCallService.createOrJoinRoom();
+    var roomId = firestoreCallService.createOrJoinRoom();
 
     addLocalTracks(localStream);
     listenForRemoteStream();
@@ -74,6 +74,7 @@ class Signalling {
     firestoreCallService.listenForRecipientIceCandidates();
     firestoreCallService.listenForCallAnswer();
     listenForEndCall();
+    return roomId;
   }
 
   joinRoom(roomId, localStream) async {

@@ -1,13 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_app/CallScreen.dart';
 import 'package:flutter_app/Contact.dart';
+import 'package:flutter_app/FCMHandler.dart';
 import 'package:flutter_app/FirestoreCallService.dart';
 import 'package:flutter_app/MyAppBar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class HomeScreen extends StatelessWidget {
+import 'CallScreen.dart';
+
+class HomeScreen extends StatefulWidget {
+  final String userId;
+
+  HomeScreen(this.userId);
+
+  @override
+  State<StatefulWidget> createState() {
+    return new HomeScreenState(this.userId);
+  }
+}
+
+class HomeScreenState extends State<HomeScreen> {
   final TextEditingController textEditingController =
       TextEditingController(text: '');
 
@@ -15,19 +28,22 @@ class HomeScreen extends StatelessWidget {
 
   final String loggedInUserId;
 
-  HomeScreen(this.loggedInUserId);
+  HomeScreenState(this.loggedInUserId);
 
-  Future<Widget> buildPageAsync() async {
-    return Future.microtask(() {
-      return CallScreen(
-          title: "Call screen", roomId: textEditingController.value.text);
-    });
+  void startCall(dynamic user, BuildContext context) async {
+    print(user);
+
+    var route = MaterialPageRoute(
+        builder: (context) => CallScreen(
+            title: "Call screen", roomId: textEditingController.value.text, fcmToken: user['fcmToken']));
+    Navigator.push(context, route);
   }
 
-  void startCall(BuildContext context) async {
-    var page = await buildPageAsync();
-    var route = MaterialPageRoute(builder: (context) => page);
-    Navigator.push(context, route);
+  @override
+  void initState() {
+    super.initState();
+    print('registering onmessage listener');
+    FirebaseMessaging.onMessage.listen(FCMHandler.messageHandler);
   }
 
   @override
