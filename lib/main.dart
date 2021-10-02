@@ -6,6 +6,7 @@ import 'package:flutter_app/MyAppBar.dart';
 import 'package:flutter_app/SelectUser.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized(); //all widgets are rendered here
   runApp(MyApp());
 }
 

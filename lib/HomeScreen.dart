@@ -11,31 +11,37 @@ import 'CallScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userId;
+  final String? roomId;
 
-  HomeScreen(this.userId);
+  HomeScreen(this.userId, [this.roomId]);
 
   @override
   State<StatefulWidget> createState() {
-    return new HomeScreenState(this.userId);
+    return new HomeScreenState(this.userId, roomId);
   }
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  final TextEditingController textEditingController =
-      TextEditingController(text: '');
-
   final FireStoreCallService fireStoreCallService = FireStoreCallService();
 
   final String loggedInUserId;
+  String roomId = '';
 
-  HomeScreenState(this.loggedInUserId);
+  HomeScreenState(this.loggedInUserId, [String? roomId]) {
+    if (roomId != null) {
+      this.roomId = roomId;
+    }
+  }
 
   void startCall(dynamic user, BuildContext context) async {
     print(user);
+    print(context);
 
     var route = MaterialPageRoute(
         builder: (context) => CallScreen(
-            title: "Call screen", roomId: textEditingController.value.text, fcmToken: user['fcmToken']));
+            title: "Call screen",
+            roomId: this.roomId,
+            fcmToken: user['fcmToken']));
     Navigator.push(context, route);
   }
 
@@ -43,7 +49,14 @@ class HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     print('registering onmessage listener');
+    FCMHandler.init(context: context);
     FirebaseMessaging.onMessage.listen(FCMHandler.messageHandler);
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      if (roomId.isNotEmpty) {
+        startCall({}, context);
+      }
+    });
   }
 
   @override
