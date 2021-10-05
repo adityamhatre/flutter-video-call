@@ -15,11 +15,13 @@ void main() {
       [
         NotificationChannel(
             importance: NotificationImportance.Max,
+            defaultRingtoneType: DefaultRingtoneType.Ringtone,
             channelKey: 'incoming_call',
             channelName: 'Incoming call',
             channelDescription: 'Notification channel for incoming calls',
             defaultColor: Color(0xFF9D50DD),
             playSound: true,
+            locked: true,
             enableVibration: true,
             ledColor: Colors.white)
       ]);

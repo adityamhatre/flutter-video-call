@@ -6,6 +6,7 @@ import 'package:flutter_app/secondaryVideo.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'MyAppBar.dart';
 import 'mainVideo.dart';
@@ -56,10 +57,12 @@ class CallScreenState extends State<CallScreen> {
           signalling.joinRoom(roomId, value[1]);
         }
       } else {
-        signalling.createRoom(value[1]).then((value) {
+        signalling.createRoom(value[1]).then((value) async {
           print('Sending req');
+          var prefs = await SharedPreferences.getInstance();
+          var username = prefs.getString("username");
           var url = Uri.parse('http://192.168.1.197:3000/call');
-          var response = http.post(url, body: {'roomId': value, 'fcmToken': fcmToken});
+          var response = http.post(url, body: {'roomId': value, 'fcmToken': fcmToken, 'caller': username});
           response.then((value) => print("value: ${value.body}"), onError: (error) {
             print('error: $error');
           });

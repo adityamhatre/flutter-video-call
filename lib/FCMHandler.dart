@@ -13,11 +13,11 @@ class FCMHandler {
     print('Message: ${message.data}');
     SharedPreferences.getInstance().then((value) {
       prefs = value;
-      checkAlreadyLoggedIn(message.data['roomId']);
+      checkAlreadyLoggedIn(message.data['roomId'], message.data['username']);
     });
   }
 
-  static void checkAlreadyLoggedIn(String roomId) async {
+  static void checkAlreadyLoggedIn(String roomId, String username) async {
     if (prefs.getString("userId") != null &&
         prefs.getString("userId")!.isNotEmpty) {
       print('joining call with room=$roomId}');
@@ -28,11 +28,16 @@ class FCMHandler {
       // FCMHandler.navigatorKey.currentState!.push(route);
 
       AwesomeNotifications().createNotification(
+          actionButtons: [
+            NotificationActionButton(key: "answer", label: "Answer"),
+            NotificationActionButton(key: "reject", label: "Reject", buttonType: ActionButtonType.KeepOnTop, autoCancel: true),
+          ],
+
           content: NotificationContent(
               id: 10,
               channelKey: 'incoming_call',
-              title: 'Incoming video call',
-              body: '',
+              title: 'Incoming video call from $username',
+              notificationLayout: NotificationLayout.Default,
               payload: {'roomId': roomId}));
     }
   }

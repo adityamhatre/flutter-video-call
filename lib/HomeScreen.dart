@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,19 @@ class HomeScreenState extends State<HomeScreen> {
     super.initState();
     print('registering onmessage listener');
     FirebaseMessaging.onMessage.listen(FCMHandler.messageHandler);
-
+    AwesomeNotifications().actionStream.listen((receivedNotification) {
+      print(receivedNotification.toMap().toString());
+      if (receivedNotification.buttonKeyPressed == 'reject') {
+        print('REJECTED');
+        return;
+      }
+      var route = MaterialPageRoute(
+          builder: (context) => CallScreen(
+              title: "Call screen",
+              roomId: receivedNotification.payload!['roomId']!,
+              fcmToken: ''));
+      FCMHandler.navigatorKey.currentState!.push(route);
+    });
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       if (roomId.isNotEmpty) {
         startCall({}, context);

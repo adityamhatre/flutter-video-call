@@ -40,15 +40,6 @@ class SelectUserState extends State<SelectUser> {
       prefs = value;
       checkAlreadyLoggedIn();
     });
-
-    AwesomeNotifications().actionStream.listen(
-            (receivedNotification){
-          var route = MaterialPageRoute(
-              builder: (context) =>
-                  CallScreen(title: "Call screen", roomId: receivedNotification.payload!['roomId']!, fcmToken: ''));
-          FCMHandler.navigatorKey.currentState!.push(route);
-        }
-    );
   }
 
   @override
@@ -105,7 +96,6 @@ class SelectUserState extends State<SelectUser> {
   void checkAlreadyLoggedIn() async {
     if (prefs.getString("userId") != null &&
         prefs.getString("userId")!.isNotEmpty) {
-
       var token = await FirebaseMessaging.instance.getToken();
       await saveTokenToDatabase(token.toString());
       FirebaseMessaging.instance.onTokenRefresh.listen(saveTokenToDatabase);
