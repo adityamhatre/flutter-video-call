@@ -42,14 +42,13 @@ class HomeScreenState extends State<HomeScreen> {
             title: "Call screen",
             roomId: this.roomId,
             fcmToken: user['fcmToken']));
-    Navigator.push(context, route);
+    FCMHandler.navigatorKey.currentState!.push(route);
   }
 
   @override
   void initState() {
     super.initState();
     print('registering onmessage listener');
-    FCMHandler.init(context: context);
     FirebaseMessaging.onMessage.listen(FCMHandler.messageHandler);
 
     WidgetsBinding.instance!.addPostFrameCallback((_) {

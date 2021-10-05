@@ -18,6 +18,7 @@ class SelectUserState extends State<SelectUser> {
   late SharedPreferences prefs;
 
   Future<void> saveTokenToDatabase(String token) async {
+    print('Refreshing FCM token');
     var token = await FirebaseMessaging.instance.getToken();
     FirebaseFirestore.instance
         .collection('users')

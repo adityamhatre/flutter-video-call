@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
         FirebaseMessaging.onBackgroundMessage(FCMHandler.messageHandler);
         if (snapshot.connectionState == ConnectionState.done) {
           return MaterialApp(
+            navigatorKey: FCMHandler.navigatorKey,
             title: 'Flutter Demo',
             debugShowCheckedModeBanner: false,
             theme: ThemeData(

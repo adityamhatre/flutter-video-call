@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/FCMHandler.dart';
 import 'package:flutter_app/Signalling.dart';
 import 'package:flutter_app/secondaryVideo.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -78,7 +79,7 @@ class CallScreenState extends State<CallScreen> {
     };
 
     signalling.onEndCall = () {
-      if (mounted) Navigator.of(context).pop();
+      if (mounted) FCMHandler.navigatorKey.currentState!.pop();
     };
   }
 
@@ -132,7 +133,7 @@ class CallScreenState extends State<CallScreen> {
               widthFactor: 1,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  FCMHandler.navigatorKey.currentState!.pop();
                 },
                 child: Text("Disconnect"),
                 style: ButtonStyle(
