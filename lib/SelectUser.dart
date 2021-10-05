@@ -1,6 +1,9 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/CallScreen.dart';
+import 'package:flutter_app/FCMHandler.dart';
 import 'package:flutter_app/FirestoreCallService.dart';
 import 'package:flutter_app/HomeScreen.dart';
 import 'package:flutter_app/MyAppBar.dart';
@@ -37,6 +40,15 @@ class SelectUserState extends State<SelectUser> {
       prefs = value;
       checkAlreadyLoggedIn();
     });
+
+    AwesomeNotifications().actionStream.listen(
+            (receivedNotification){
+          var route = MaterialPageRoute(
+              builder: (context) =>
+                  CallScreen(title: "Call screen", roomId: receivedNotification.payload!['roomId']!, fcmToken: ''));
+          FCMHandler.navigatorKey.currentState!.push(route);
+        }
+    );
   }
 
   @override

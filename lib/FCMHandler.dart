@@ -1,8 +1,7 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/CallScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 class FCMHandler {
   static late SharedPreferences prefs;
@@ -22,13 +21,19 @@ class FCMHandler {
     if (prefs.getString("userId") != null &&
         prefs.getString("userId")!.isNotEmpty) {
       print('joining call with room=$roomId}');
+      //
+      // var route = MaterialPageRoute(
+      //     builder: (context) =>
+      //         CallScreen(title: "Call screen", roomId: roomId, fcmToken: ''));
+      // FCMHandler.navigatorKey.currentState!.push(route);
 
-      var route = MaterialPageRoute(
-          builder: (context) =>
-              CallScreen(title: "Call screen", roomId: roomId, fcmToken: ''));
-      FCMHandler.navigatorKey.currentState!.push(route);
-
-
+      AwesomeNotifications().createNotification(
+          content: NotificationContent(
+              id: 10,
+              channelKey: 'incoming_call',
+              title: 'Incoming video call',
+              body: '',
+              payload: {'roomId': roomId}));
     }
   }
 }

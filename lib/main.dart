@@ -1,12 +1,36 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/CallScreen.dart';
 import 'package:flutter_app/FCMHandler.dart';
 import 'package:flutter_app/MyAppBar.dart';
 import 'package:flutter_app/SelectUser.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized(); //all widgets are rendered here
+  AwesomeNotifications().initialize(
+      // set the icon to null if you want to use the default app icon
+      'resource://mipmap/ic_launcher',
+      [
+        NotificationChannel(
+            importance: NotificationImportance.Max,
+            channelKey: 'incoming_call',
+            channelName: 'Incoming call',
+            channelDescription: 'Notification channel for incoming calls',
+            defaultColor: Color(0xFF9D50DD),
+            playSound: true,
+            enableVibration: true,
+            ledColor: Colors.white)
+      ]);
+  AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+    if (!isAllowed) {
+      // Insert here your friendly dialog box before call the request method
+      // This is very important to not harm the user experience
+      AwesomeNotifications().requestPermissionToSendNotifications();
+    }
+  });
+
   runApp(MyApp());
 }
 

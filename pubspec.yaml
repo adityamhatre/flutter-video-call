@@ -36,6 +36,7 @@ dependencies:
   shared_preferences:
   tuple:
   firebase_messaging:
+  awesome_notifications: any
 
 dev_dependencies:
   flutter_test:
