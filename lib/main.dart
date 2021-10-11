@@ -2,10 +2,9 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/CallScreen.dart';
-import 'package:flutter_app/FCMHandler.dart';
-import 'package:flutter_app/MyAppBar.dart';
-import 'package:flutter_app/SelectUser.dart';
+import 'package:video_call/FCMHandler.dart';
+import 'package:video_call/MyAppBar.dart';
+import 'package:video_call/SelectUser.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized(); //all widgets are rendered here

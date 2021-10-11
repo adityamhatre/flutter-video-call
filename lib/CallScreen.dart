@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/FCMHandler.dart';
-import 'package:flutter_app/Signalling.dart';
-import 'package:flutter_app/secondaryVideo.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:video_call/FCMHandler.dart';
+import 'package:video_call/Signalling.dart';
+import 'package:video_call/secondaryVideo.dart';
 
 import 'MyAppBar.dart';
 import 'mainVideo.dart';
@@ -16,8 +16,10 @@ class CallScreen extends StatefulWidget {
   late final String roomId;
   late final String? fcmToken;
 
-
-  CallScreen({required String title, required String roomId, required String? fcmToken}) {
+  CallScreen(
+      {required String title,
+      required String roomId,
+      required String? fcmToken}) {
     this.title = title;
     this.roomId = roomId;
     this.fcmToken = fcmToken;
@@ -25,7 +27,8 @@ class CallScreen extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return CallScreenState(title: this.title, roomId: this.roomId, fcmToken: this.fcmToken);
+    return CallScreenState(
+        title: this.title, roomId: this.roomId, fcmToken: this.fcmToken);
   }
 }
 
@@ -37,7 +40,10 @@ class CallScreenState extends State<CallScreen> {
   late final RTCVideoRenderer localRenderer;
   late final RTCVideoRenderer remoteRenderer;
 
-  CallScreenState({required String title, required String roomId, required String? fcmToken}) {
+  CallScreenState(
+      {required String title,
+      required String roomId,
+      required String? fcmToken}) {
     this.title = title;
     this.signalling = Signalling();
     this.localRenderer = RTCVideoRenderer();
@@ -58,12 +64,16 @@ class CallScreenState extends State<CallScreen> {
         }
       } else {
         signalling.createRoom(value[1]).then((value) async {
-          print('Sending req');
           var prefs = await SharedPreferences.getInstance();
           var username = prefs.getString("username");
-          var url = Uri.parse('http://192.168.1.197:3000/call');
-          var response = http.post(url, body: {'roomId': value, 'fcmToken': fcmToken, 'caller': username});
-          response.then((value) => print("value: ${value.body}"), onError: (error) {
+          var url = Uri.parse('${FCMHandler.server}/call');
+          var response = http.post(url, body: {
+            'roomId': value,
+            'fcmToken': fcmToken,
+            'caller': username
+          });
+          response.then((value) => print("value: ${value.body}"),
+              onError: (error) {
             print('error: $error');
           });
         });

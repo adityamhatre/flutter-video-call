@@ -9,6 +9,9 @@ class FCMHandler {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'mainNavigator');
 
+  static final server =
+      "https://aditya-video-calling-server.herokuapp.com"; //"""http://192.168.1.197:3000";
+
   static Future<void> messageHandler(RemoteMessage message) async {
     print('Message: ${message.data}');
     SharedPreferences.getInstance().then((value) {
@@ -30,9 +33,12 @@ class FCMHandler {
       AwesomeNotifications().createNotification(
           actionButtons: [
             NotificationActionButton(key: "answer", label: "Answer"),
-            NotificationActionButton(key: "reject", label: "Reject", buttonType: ActionButtonType.KeepOnTop, autoCancel: true),
+            NotificationActionButton(
+                key: "reject",
+                label: "Reject",
+                buttonType: ActionButtonType.KeepOnTop,
+                autoCancel: true),
           ],
-
           content: NotificationContent(
               id: 10,
               channelKey: 'incoming_call',

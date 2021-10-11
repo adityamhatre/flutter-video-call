@@ -3,10 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_app/Contact.dart';
-import 'package:flutter_app/FCMHandler.dart';
-import 'package:flutter_app/FirestoreCallService.dart';
-import 'package:flutter_app/MyAppBar.dart';
+import 'package:video_call/Contact.dart';
+import 'package:video_call/FCMHandler.dart';
+import 'package:video_call/FirestoreCallService.dart';
+import 'package:video_call/MyAppBar.dart';
 
 import 'CallScreen.dart';
 

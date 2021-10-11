@@ -1,14 +1,11 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/CallScreen.dart';
-import 'package:flutter_app/FCMHandler.dart';
-import 'package:flutter_app/FirestoreCallService.dart';
-import 'package:flutter_app/HomeScreen.dart';
-import 'package:flutter_app/MyAppBar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
+import 'package:video_call/FirestoreCallService.dart';
+import 'package:video_call/HomeScreen.dart';
+import 'package:video_call/MyAppBar.dart';
 
 class SelectUser extends StatefulWidget {
   @override

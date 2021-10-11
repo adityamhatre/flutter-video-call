@@ -1,4 +1,4 @@
-name: video-call
+name: video_call
 description: A new video calling application.
 
 # The following line prevents the package from being accidentally published to

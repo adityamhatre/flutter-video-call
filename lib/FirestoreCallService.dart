@@ -37,8 +37,9 @@ class FireStoreCallService {
     callerIceCandidates.add(map);
   }
 
-  void setOffer(RTCSessionDescription offer) {
-    roomRef.set(Map.of({"offer": offer.toMap()}), SetOptions(merge: true));
+  Future setOffer(RTCSessionDescription offer) {
+    return roomRef.set(
+        Map.of({"offer": offer.toMap()}), SetOptions(merge: true));
   }
 
   void listenForRecipientIceCandidates() {
