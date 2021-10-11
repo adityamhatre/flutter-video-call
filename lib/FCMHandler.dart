@@ -23,12 +23,7 @@ class FCMHandler {
   static void checkAlreadyLoggedIn(String roomId, String username) async {
     if (prefs.getString("userId") != null &&
         prefs.getString("userId")!.isNotEmpty) {
-      print('joining call with room=$roomId}');
-      //
-      // var route = MaterialPageRoute(
-      //     builder: (context) =>
-      //         CallScreen(title: "Call screen", roomId: roomId, fcmToken: ''));
-      // FCMHandler.navigatorKey.currentState!.push(route);
+      print('incoming call with room=$roomId}');
 
       AwesomeNotifications().createNotification(
           actionButtons: [
