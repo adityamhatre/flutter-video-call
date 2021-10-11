@@ -1,5 +1,5 @@
-name: flutter_app
-description: A new Flutter application.
+name: video_call
+description: A new video calling application.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -35,6 +35,9 @@ dependencies:
   cached_network_image: ^3.1.0
   shared_preferences:
   tuple:
+  firebase_messaging:
+  awesome_notifications: any
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

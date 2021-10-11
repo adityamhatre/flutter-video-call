@@ -24,7 +24,7 @@ class Contact extends StatelessWidget {
                 image: imageProvider,
                 fit: BoxFit.cover,
                 child: InkWell(onTap: () {
-                  onClicked.call(context);
+                  onClicked.call(this.user, context);
                 }),
               ),
             );

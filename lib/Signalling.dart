@@ -1,5 +1,5 @@
-import 'package:flutter_app/FirestoreCallService.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:video_call/FirestoreCallService.dart';
 
 typedef void OnAddRemoteStream(MediaStream stream);
 typedef void OnEndCall();
@@ -48,9 +48,9 @@ class Signalling {
     };
   }
 
-  createRoom(localStream) async {
+  Future<String> createRoom(localStream) async {
     peerConnection = await createPeerConnection(config);
-    firestoreCallService.createOrJoinRoom();
+    var roomId = firestoreCallService.createOrJoinRoom();
 
     addLocalTracks(localStream);
     listenForRemoteStream();
@@ -61,7 +61,7 @@ class Signalling {
     var offer = await peerConnection.createOffer();
     peerConnection.setLocalDescription(offer);
 
-    firestoreCallService.setOffer(offer);
+    await firestoreCallService.setOffer(offer);
     firestoreCallService.onRecipientIceCandidates =
         (RTCIceCandidate rtcIceCandidate) {
       peerConnection.addCandidate(rtcIceCandidate);
@@ -74,6 +74,7 @@ class Signalling {
     firestoreCallService.listenForRecipientIceCandidates();
     firestoreCallService.listenForCallAnswer();
     listenForEndCall();
+    return roomId;
   }
 
   joinRoom(roomId, localStream) async {

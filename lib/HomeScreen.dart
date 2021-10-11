@@ -1,33 +1,74 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_app/CallScreen.dart';
-import 'package:flutter_app/Contact.dart';
-import 'package:flutter_app/FirestoreCallService.dart';
-import 'package:flutter_app/MyAppBar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:video_call/Contact.dart';
+import 'package:video_call/FCMHandler.dart';
+import 'package:video_call/FirestoreCallService.dart';
+import 'package:video_call/MyAppBar.dart';
 
-class HomeScreen extends StatelessWidget {
-  final TextEditingController textEditingController =
-      TextEditingController(text: '');
+import 'CallScreen.dart';
 
+class HomeScreen extends StatefulWidget {
+  final String userId;
+  final String? roomId;
+
+  HomeScreen(this.userId, [this.roomId]);
+
+  @override
+  State<StatefulWidget> createState() {
+    return new HomeScreenState(this.userId, roomId);
+  }
+}
+
+class HomeScreenState extends State<HomeScreen> {
   final FireStoreCallService fireStoreCallService = FireStoreCallService();
 
   final String loggedInUserId;
+  String roomId = '';
 
-  HomeScreen(this.loggedInUserId);
-
-  Future<Widget> buildPageAsync() async {
-    return Future.microtask(() {
-      return CallScreen(
-          title: "Call screen", roomId: textEditingController.value.text);
-    });
+  HomeScreenState(this.loggedInUserId, [String? roomId]) {
+    if (roomId != null) {
+      this.roomId = roomId;
+    }
   }
 
-  void startCall(BuildContext context) async {
-    var page = await buildPageAsync();
-    var route = MaterialPageRoute(builder: (context) => page);
-    Navigator.push(context, route);
+  void startCall(dynamic user, BuildContext context) async {
+    print(user);
+    print(context);
+
+    var route = MaterialPageRoute(
+        builder: (context) => CallScreen(
+            title: "Call screen",
+            roomId: this.roomId,
+            fcmToken: user['fcmToken']));
+    FCMHandler.navigatorKey.currentState!.push(route);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    print('registering onmessage listener');
+    FirebaseMessaging.onMessage.listen(FCMHandler.messageHandler);
+    AwesomeNotifications().actionStream.listen((receivedNotification) {
+      print(receivedNotification.toMap().toString());
+      if (receivedNotification.buttonKeyPressed == 'reject') {
+        print('REJECTED');
+        return;
+      }
+      var route = MaterialPageRoute(
+          builder: (context) => CallScreen(
+              title: "Call screen",
+              roomId: receivedNotification.payload!['roomId']!,
+              fcmToken: ''));
+      FCMHandler.navigatorKey.currentState!.push(route);
+    });
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      if (roomId.isNotEmpty) {
+        startCall({}, context);
+      }
+    });
   }
 
   @override
