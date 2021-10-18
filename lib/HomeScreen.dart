@@ -23,11 +23,20 @@ class HomeScreen extends StatefulWidget {
   }
 }
 
-class HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final FireStoreCallService fireStoreCallService = FireStoreCallService();
 
   final String loggedInUserId;
   String roomId = '';
+  int flag = 0;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    setState(() {
+      flag = flag == 0 ? 1 : 0;
+    });
+  }
 
   HomeScreenState(this.loggedInUserId, [String? roomId]) {
     if (roomId != null) {
@@ -48,8 +57,15 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance!.addObserver(this);
     print('registering onmessage listener');
     FirebaseMessaging.onMessage.listen(FCMHandler.messageHandler);
     AwesomeNotifications().actionStream.listen((receivedNotification) {
@@ -69,6 +85,15 @@ class HomeScreenState extends State<HomeScreen> {
       if (roomId.isNotEmpty) {
         startCall({}, context);
       }
+    });
+    FirebaseFirestore.instance
+        .collection("users")
+        .snapshots()
+        .listen((querySnapshot) {
+      print('Users collection changed');
+      setState(() {
+        flag = flag == 0 ? 1 : 0;
+      });
     });
   }
 
