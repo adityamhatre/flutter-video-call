@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
@@ -16,10 +19,9 @@ class CallScreen extends StatefulWidget {
   late final String roomId;
   late final String? fcmToken;
 
-  CallScreen(
-      {required String title,
-      required String roomId,
-      required String? fcmToken}) {
+  CallScreen({required String title,
+    required String roomId,
+    required String? fcmToken}) {
     this.title = title;
     this.roomId = roomId;
     this.fcmToken = fcmToken;
@@ -39,11 +41,13 @@ class CallScreenState extends State<CallScreen> {
   late final Signalling signalling;
   late final RTCVideoRenderer localRenderer;
   late final RTCVideoRenderer remoteRenderer;
+  var callConnected = false;
+  var isIncomingCallState = false;
+  Timer? timer;
 
-  CallScreenState(
-      {required String title,
-      required String roomId,
-      required String? fcmToken}) {
+  CallScreenState({required String title,
+    required String roomId,
+    required String? fcmToken}) {
     this.title = title;
     this.signalling = Signalling();
     this.localRenderer = RTCVideoRenderer();
@@ -57,9 +61,14 @@ class CallScreenState extends State<CallScreen> {
     super.initState();
     localRenderer.initialize();
     remoteRenderer.initialize();
+    startTimer(60);
+
     getUserMedia().then((value) {
       if (roomId.isNotEmpty) {
         if (value[0]) {
+          setState(() {
+            isIncomingCallState = true;
+          });
           signalling.joinRoom(roomId, value[1]);
         }
       } else {
@@ -74,8 +83,8 @@ class CallScreenState extends State<CallScreen> {
           });
           response.then((value) => print("value: ${value.body}"),
               onError: (error) {
-            print('error: $error');
-          });
+                print('error: $error');
+              });
         });
       }
     });
@@ -88,12 +97,27 @@ class CallScreenState extends State<CallScreen> {
           });
         }
         remoteRenderer.srcObject = stream;
+        callConnected = true;
       });
     };
 
     signalling.onEndCall = () {
-      if (mounted) FCMHandler.navigatorKey.currentState!.pop();
+      endCall();
     };
+  }
+
+  void endCall() {
+    if (!mounted) return;
+
+    if (timer != null) {
+      timer!.cancel();
+    }
+
+    if (isIncomingCallState) {
+      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+    } else {
+      FCMHandler.navigatorKey.currentState!.pop();
+    }
   }
 
   @override
@@ -104,14 +128,27 @@ class CallScreenState extends State<CallScreen> {
     signalling.endCall();
   }
 
+  void startTimer(int countDown) {
+    print('starting timer');
+    timer = Timer(new Duration(seconds: countDown), () {
+      if (callConnected) return;
+      print('timer tick');
+      endCall();
+    });
+  }
+
   Future<List<dynamic>> getUserMedia() async {
     final Map<String, dynamic> constraints = {
       "audio": true,
       "video": {"facingMode": "user"}
     };
     if (kIsWeb ||
-        (await Permission.camera.request().isGranted &&
-            await Permission.microphone.request().isGranted)) {
+        (await Permission.camera
+            .request()
+            .isGranted &&
+            await Permission.microphone
+                .request()
+                .isGranted)) {
       var stream = await navigator.mediaDevices.getUserMedia(constraints);
       var remote = await createLocalMediaStream("remoteRenderer");
       setState(() {
@@ -129,7 +166,10 @@ class CallScreenState extends State<CallScreen> {
       title: Text(this.title),
     );
     final appBarHeight = appBar.preferredSize.height;
-    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final statusBarHeight = MediaQuery
+        .of(context)
+        .padding
+        .top;
     return Scaffold(
       appBar: appBar,
       body: Stack(
@@ -146,7 +186,7 @@ class CallScreenState extends State<CallScreen> {
               widthFactor: 1,
               child: ElevatedButton(
                 onPressed: () {
-                  FCMHandler.navigatorKey.currentState!.pop();
+                  endCall();
                 },
                 child: Text("Disconnect"),
                 style: ButtonStyle(

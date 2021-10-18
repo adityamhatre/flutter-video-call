@@ -21,6 +21,7 @@ void main() {
             defaultColor: Color(0xFF9D50DD),
             playSound: true,
             locked: true,
+            soundSource: 'resource://raw/res_ring',
             enableVibration: true,
             ledColor: Colors.white)
       ]);

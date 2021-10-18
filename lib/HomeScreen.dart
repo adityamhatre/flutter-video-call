@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:video_call/AnswerRejectScreen.dart';
 import 'package:video_call/Contact.dart';
 import 'package:video_call/FCMHandler.dart';
 import 'package:video_call/FirestoreCallService.dart';
@@ -57,11 +58,11 @@ class HomeScreenState extends State<HomeScreen> {
         print('REJECTED');
         return;
       }
+
       var route = MaterialPageRoute(
-          builder: (context) => CallScreen(
-              title: "Call screen",
-              roomId: receivedNotification.payload!['roomId']!,
-              fcmToken: ''));
+          builder: (context) => AnswerRejectScreen(
+                roomId: receivedNotification.payload!['roomId']!,
+              ));
       FCMHandler.navigatorKey.currentState!.push(route);
     });
     WidgetsBinding.instance!.addPostFrameCallback((_) {
