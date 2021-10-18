@@ -13,7 +13,6 @@ import 'package:video_call/secondaryVideo.dart';
 
 import 'MyAppBar.dart';
 import 'mainVideo.dart';
-
 class CallScreen extends StatefulWidget {
   late final title;
   late final String roomId;
@@ -91,11 +90,6 @@ class CallScreenState extends State<CallScreen> {
 
     signalling.onAddRemoteStream = (MediaStream stream) {
       setState(() {
-        if (!kIsWeb) {
-          stream.getTracks().forEach((element) {
-            if (element.kind == "audio") element.enableSpeakerphone(true);
-          });
-        }
         remoteRenderer.srcObject = stream;
         callConnected = true;
       });
@@ -106,12 +100,16 @@ class CallScreenState extends State<CallScreen> {
     };
   }
 
-  void endCall() {
+  void endCall() async {
     if (!mounted) return;
 
     if (timer != null) {
       timer!.cancel();
     }
+
+    await localRenderer.dispose();
+    await remoteRenderer.dispose();
+    signalling.endCall();
 
     if (isIncomingCallState) {
       SystemChannels.platform.invokeMethod('SystemNavigator.pop');
@@ -123,9 +121,6 @@ class CallScreenState extends State<CallScreen> {
   @override
   void dispose() {
     super.dispose();
-    localRenderer.dispose();
-    remoteRenderer.dispose();
-    signalling.endCall();
   }
 
   void startTimer(int countDown) {
