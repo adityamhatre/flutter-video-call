@@ -1,4 +1,5 @@
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:video_call/AppBackend.dart';
 import 'package:video_call/FirestoreCallService.dart';
 
 typedef void OnAddRemoteStream(MediaStream stream);
@@ -55,6 +56,7 @@ class Signalling {
     addLocalTracks(localStream);
     listenForRemoteStream();
     peerConnection.onIceCandidate = (candidate) {
+      if (callDisconnected) return;
       firestoreCallService.addCallerIceCandidates(candidate.toMap());
     };
 
@@ -85,6 +87,7 @@ class Signalling {
     addLocalTracks(localStream);
     listenForRemoteStream();
     peerConnection.onIceCandidate = (candidate) {
+      if (callDisconnected) return;
       firestoreCallService.addRecipientIceCandidates(candidate.toMap());
     };
 
@@ -103,11 +106,11 @@ class Signalling {
     listenForEndCall();
   }
 
-  endCall() {
+  endCall(String roomId) {
     if (callDisconnected) return;
     callDisconnected = true;
     peerConnection.close();
     peerConnection.dispose();
-    firestoreCallService.endCall();
+    AppBackend.delete(roomId);
   }
 }

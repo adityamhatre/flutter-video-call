@@ -13,14 +13,16 @@ import 'package:video_call/secondaryVideo.dart';
 
 import 'MyAppBar.dart';
 import 'mainVideo.dart';
+
 class CallScreen extends StatefulWidget {
   late final title;
   late final String roomId;
   late final String? fcmToken;
 
-  CallScreen({required String title,
-    required String roomId,
-    required String? fcmToken}) {
+  CallScreen(
+      {required String title,
+      required String roomId,
+      required String? fcmToken}) {
     this.title = title;
     this.roomId = roomId;
     this.fcmToken = fcmToken;
@@ -44,9 +46,10 @@ class CallScreenState extends State<CallScreen> {
   var isIncomingCallState = false;
   Timer? timer;
 
-  CallScreenState({required String title,
-    required String roomId,
-    required String? fcmToken}) {
+  CallScreenState(
+      {required String title,
+      required String roomId,
+      required String? fcmToken}) {
     this.title = title;
     this.signalling = Signalling();
     this.localRenderer = RTCVideoRenderer();
@@ -80,10 +83,13 @@ class CallScreenState extends State<CallScreen> {
             'fcmToken': fcmToken,
             'caller': username
           });
+          setState(() {
+            this.roomId = value;
+          });
           response.then((value) => print("value: ${value.body}"),
               onError: (error) {
-                print('error: $error');
-              });
+            print('error: $error');
+          });
         });
       }
     });
@@ -107,9 +113,7 @@ class CallScreenState extends State<CallScreen> {
       timer!.cancel();
     }
 
-    await localRenderer.dispose();
-    await remoteRenderer.dispose();
-    signalling.endCall();
+    signalling.endCall(roomId);
 
     if (isIncomingCallState) {
       SystemChannels.platform.invokeMethod('SystemNavigator.pop');
@@ -121,6 +125,9 @@ class CallScreenState extends State<CallScreen> {
   @override
   void dispose() {
     super.dispose();
+    localRenderer.dispose();
+    remoteRenderer.dispose();
+
   }
 
   void startTimer(int countDown) {
@@ -138,12 +145,8 @@ class CallScreenState extends State<CallScreen> {
       "video": {"facingMode": "user"}
     };
     if (kIsWeb ||
-        (await Permission.camera
-            .request()
-            .isGranted &&
-            await Permission.microphone
-                .request()
-                .isGranted)) {
+        (await Permission.camera.request().isGranted &&
+            await Permission.microphone.request().isGranted)) {
       var stream = await navigator.mediaDevices.getUserMedia(constraints);
       var remote = await createLocalMediaStream("remoteRenderer");
       setState(() {
@@ -161,10 +164,7 @@ class CallScreenState extends State<CallScreen> {
       title: Text(this.title),
     );
     final appBarHeight = appBar.preferredSize.height;
-    final statusBarHeight = MediaQuery
-        .of(context)
-        .padding
-        .top;
+    final statusBarHeight = MediaQuery.of(context).padding.top;
     return Scaffold(
       appBar: appBar,
       body: Stack(
