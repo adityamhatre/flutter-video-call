@@ -10,7 +10,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized(); //all widgets are rendered here
   AwesomeNotifications().initialize(
       // set the icon to null if you want to use the default app icon
-      'resource://mipmap/ic_launcher',
+      'resource://mipmap/launcher_icon',
       [
         NotificationChannel(
             importance: NotificationImportance.Max,
