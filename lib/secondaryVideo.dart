@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+// ignore: implementation_imports
 import 'package:flutter_webrtc/src/rtc_video_renderer.dart';
 
 class SecondaryVideo extends StatefulWidget {
