@@ -19,10 +19,9 @@ class CallScreen extends StatefulWidget {
   late final String roomId;
   late final String? fcmToken;
 
-  CallScreen(
-      {required String title,
-      required String roomId,
-      required String? fcmToken}) {
+  CallScreen({required String title,
+    required String roomId,
+    required String? fcmToken}) {
     this.title = title;
     this.roomId = roomId;
     this.fcmToken = fcmToken;
@@ -46,10 +45,9 @@ class CallScreenState extends State<CallScreen> {
   var isIncomingCallState = false;
   Timer? timer;
 
-  CallScreenState(
-      {required String title,
-      required String roomId,
-      required String? fcmToken}) {
+  CallScreenState({required String title,
+    required String roomId,
+    required String? fcmToken}) {
     this.title = title;
     this.signalling = Signalling();
     this.localRenderer = RTCVideoRenderer();
@@ -88,8 +86,8 @@ class CallScreenState extends State<CallScreen> {
           });
           response.then((value) => print("value: ${value.body}"),
               onError: (error) {
-            print('error: $error');
-          });
+                print('error: $error');
+              });
         });
       }
     });
@@ -123,8 +121,8 @@ class CallScreenState extends State<CallScreen> {
     }
   }
 
-  Future  clearSharedPrefs() async{
-    var prefs = await  SharedPreferences.getInstance();
+  Future clearSharedPrefs() async {
+    var prefs = await SharedPreferences.getInstance();
 
     var userId = prefs.getString("userId")!;
     var username = prefs.getString("username")!;
@@ -138,7 +136,6 @@ class CallScreenState extends State<CallScreen> {
     super.dispose();
     localRenderer.dispose();
     remoteRenderer.dispose();
-
   }
 
   void startTimer(int countDown) {
@@ -156,8 +153,12 @@ class CallScreenState extends State<CallScreen> {
       "video": {"facingMode": "user"}
     };
     if (kIsWeb ||
-        (await Permission.camera.request().isGranted &&
-            await Permission.microphone.request().isGranted)) {
+        (await Permission.camera
+            .request()
+            .isGranted &&
+            await Permission.microphone
+                .request()
+                .isGranted)) {
       var stream = await navigator.mediaDevices.getUserMedia(constraints);
       var remote = await createLocalMediaStream("remoteRenderer");
       setState(() {
@@ -175,16 +176,25 @@ class CallScreenState extends State<CallScreen> {
       title: Text(this.title),
     );
     final appBarHeight = appBar.preferredSize.height;
-    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final statusBarHeight = MediaQuery
+        .of(context)
+        .padding
+        .top;
     return Scaffold(
       appBar: appBar,
       body: Stack(
         children: [
-          MainVideo(renderer: this.localRenderer),
+          MainVideo(
+              callConnected: this.callConnected,
+              renderer: this.callConnected
+              ? this.remoteRenderer
+                  : this.localRenderer),
           SecondaryVideo(
-            appBarHeight: appBarHeight,
-            statusBarHeight: statusBarHeight,
-            renderer: this.remoteRenderer,
+              appBarHeight: appBarHeight,
+              statusBarHeight: statusBarHeight,
+              renderer:
+              this.callConnected ? this.localRenderer : this.remoteRenderer,
+              callConnected: this.callConnected
           ),
           Align(
             child: FractionallySizedBox(

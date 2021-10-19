@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+
 // ignore: implementation_imports
 import 'package:flutter_webrtc/src/rtc_video_renderer.dart';
 
@@ -7,11 +8,13 @@ class SecondaryVideo extends StatefulWidget {
   late final appBarHeight;
   late final statusBarHeight;
   late final renderer;
+  late final callConnected;
 
   SecondaryVideo(
       {required appBarHeight,
       required statusBarHeight,
-      required RTCVideoRenderer renderer}) {
+      required RTCVideoRenderer renderer,
+      required this.callConnected}) {
     this.appBarHeight = appBarHeight;
     this.statusBarHeight = statusBarHeight;
     this.renderer = renderer;
@@ -38,19 +41,19 @@ class SecondaryVideoState extends State<SecondaryVideo> {
 
   @override
   Widget build(BuildContext context) {
-    final widget = SizedBox.fromSize(
+    final aWidget = SizedBox.fromSize(
         size: Size(200, 200),
         child: RTCVideoView(
-          renderer,
-          mirror: false,
+          widget.renderer,
+          mirror: widget.callConnected,
           objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
         ));
     return Positioned(
         left: x,
         top: y,
         child: Draggable(
-          feedback: widget,
-          child: widget,
+          feedback: aWidget,
+          child: aWidget,
           childWhenDragging: Container(),
           onDragEnd: (details) {
             setState(() {
