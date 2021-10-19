@@ -31,6 +31,9 @@ class AnswerRejectScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments;
+    print(args);
+
     return Scaffold(
       appBar: MyAppBar(
         title: Text("Answer or Reject"),
