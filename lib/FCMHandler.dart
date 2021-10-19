@@ -1,4 +1,4 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:connectycube_flutter_call_kit/connectycube_flutter_call_kit.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,7 +25,7 @@ class FCMHandler {
         prefs.getString("userId")!.isNotEmpty) {
       print('incoming call with room=$roomId}');
 
-      AwesomeNotifications().createNotification(
+      /*AwesomeNotifications().createNotification(
           actionButtons: [
             NotificationActionButton(key: "answer", label: "Answer"),
             NotificationActionButton(
@@ -39,7 +39,16 @@ class FCMHandler {
               channelKey: 'incoming_call',
               title: 'Incoming video call from $username',
               notificationLayout: NotificationLayout.Default,
-              payload: {'roomId': roomId}));
+              payload: {'roomId': roomId}));*/
+
+      var s = Set.of([1, 2, 3, 4]);
+      ConnectycubeFlutterCallKit.showCallNotification(
+        sessionId: roomId,
+        callType: 1,
+        callerId: 2,
+        callerName: username,
+        opponentsIds: s,
+      );
     }
   }
 }

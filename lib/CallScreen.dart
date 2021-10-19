@@ -114,12 +114,23 @@ class CallScreenState extends State<CallScreen> {
     }
 
     signalling.endCall(roomId);
+    await clearSharedPrefs();
 
     if (isIncomingCallState) {
       SystemChannels.platform.invokeMethod('SystemNavigator.pop');
     } else {
       FCMHandler.navigatorKey.currentState!.pop();
     }
+  }
+
+  Future  clearSharedPrefs() async{
+    var prefs = await  SharedPreferences.getInstance();
+
+    var userId = prefs.getString("userId")!;
+    var username = prefs.getString("username")!;
+    await prefs.clear();
+    await prefs.setString("userId", userId);
+    await prefs.setString("username", username);
   }
 
   @override

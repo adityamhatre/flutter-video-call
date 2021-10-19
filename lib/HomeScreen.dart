@@ -1,8 +1,10 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectycube_flutter_call_kit/connectycube_flutter_call_kit.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_call/AnswerRejectScreen.dart';
 import 'package:video_call/Contact.dart';
 import 'package:video_call/FCMHandler.dart';
@@ -68,22 +70,20 @@ class HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance!.addObserver(this);
     print('registering onmessage listener');
     FirebaseMessaging.onMessage.listen(FCMHandler.messageHandler);
-    AwesomeNotifications().actionStream.listen((receivedNotification) {
-      print(receivedNotification.toMap().toString());
-      if (receivedNotification.buttonKeyPressed == 'reject') {
-        print('REJECTED');
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      if (roomId.isNotEmpty) {
+        startCall({}, context);
         return;
       }
 
-      var route = MaterialPageRoute(
-          builder: (context) => AnswerRejectScreen(
-                roomId: receivedNotification.payload!['roomId']!,
-              ));
-      FCMHandler.navigatorKey.currentState!.push(route);
-    });
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      if (roomId.isNotEmpty) {
+      var prefs = await SharedPreferences.getInstance();
+      if(prefs.containsKey("callId")){
+        setState(() {
+          roomId = prefs.getString("callId")!;
+        });
         startCall({}, context);
+
       }
     });
     FirebaseFirestore.instance
@@ -95,6 +95,33 @@ class HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         flag = flag == 0 ? 1 : 0;
       });
     });
+
+    ConnectycubeFlutterCallKit.instance
+        .init(onCallAccepted: _onCallAccepted, onCallRejected: _onCallRejected);
+  }
+
+  Future<void> _onCallAccepted(
+      String sessionId,
+      int callType,
+      int callerId,
+      String callerName,
+      Set<int> opponentsIds,
+      Map<String, String>? userInfo) async {
+    print(sessionId);
+    var route = MaterialPageRoute(
+        builder: (context) =>
+            CallScreen(title: "Call screen", roomId: sessionId, fcmToken: ''));
+
+    FCMHandler.navigatorKey.currentState!.push(route);  }
+
+  Future<void> _onCallRejected(
+      String sessionId,
+      int callType,
+      int callerId,
+      String callerName,
+      Set<int> opponentsIds,
+      Map<String, String>? userInfo) async {
+    print('rejected');
   }
 
   @override

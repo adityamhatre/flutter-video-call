@@ -3,6 +3,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
+import 'package:video_call/AndroidConnectyCubeSharedPrefs.dart';
+import 'package:video_call/FCMHandler.dart';
 import 'package:video_call/FirestoreCallService.dart';
 import 'package:video_call/HomeScreen.dart';
 import 'package:video_call/MyAppBar.dart';
@@ -91,6 +93,7 @@ class SelectUserState extends State<SelectUser> {
   }
 
   void checkAlreadyLoggedIn() async {
+    print(prefs.getKeys());
     if (prefs.getString("userId") != null &&
         prefs.getString("userId")!.isNotEmpty) {
       var token = await FirebaseMessaging.instance.getToken();
